@@ -14,6 +14,9 @@ the strategy doubles up or busts.
 //#define WINVER 0x0500
 #include <windows.h>
 
+#include "BotUtilities.h"
+#include "StratBot.h"
+
 using namespace std;
 
 void printHeader();
@@ -22,23 +25,24 @@ void closeBovada();
 void openDeveloperTools();
 void findHTMLvalues();
 void primeChromeForObjectSelction();
-void mouseMove(int x, int y);
-void leftClick();
 
 int main() {
 	vector<double> strat_stakes;
-
+	int num_sims;
+	
 	printHeader();
 	getStratFromUser(strat_stakes);
+	cout << "How many simulations would you like the bot to run?";
+	cin >> num_sims;
 
-	//Open Bovada
-	ShellExecute(NULL, "open", "https://casino.bovada.lv/table-games/european-roulette?mode=practice", NULL, NULL, SW_SHOWMAXIMIZED);
+	ShellExecute(NULL, "open", "https://casino.bovada.lv/table-games/european-roulette?mode=practice", NULL, NULL, SW_SHOWMAXIMIZED); //Open Bovada
 	Sleep(7000); // Sleep to let page load. Hopefully there is a better way to do this!
 	openDeveloperTools();
-	Sleep(3000); // Sleep to let developer tools open
-	findHTMLvalues();
-	Sleep(10000);
 	
+	findHTMLvalues();
+	StratBot myStratBot = StratBot(strat_stakes, num_sims);
+	myStratBot.runSims();
+	myStratBot.printResults();
 	closeBovada();
 	cout << "Press ENTER to terminate bot." << endl;
 	cin.get();
@@ -46,6 +50,7 @@ int main() {
 
 void printHeader() {
 	cout << "You are now running the Bovada Practice Mode Bot." << endl;
+	cout << endl;
 	cout << "Currently, this bot assumes the following: " << endl;
 	cout << "	OS: Windows 10 Home" << endl;
 	cout << "	Default Browser: Google Chrome 59.0.3071.115" << endl;
@@ -135,6 +140,7 @@ void openDeveloperTools() { // CTRL + Shift + I
 	ip.ki.dwFlags = KEYEVENTF_KEYUP; // KEYEVENTF_KEYUP for key release
 	SendInput(1, &ip, sizeof(INPUT));
 
+	Sleep(3000); // Sleep to let developer tools open
 }
 
 void findHTMLvalues() {
@@ -185,31 +191,4 @@ void primeChromeForObjectSelction() { // CTRL + Shift + C (prime Chrome to selec
 	ip.ki.wVk = VK_CONTROL;
 	ip.ki.dwFlags = KEYEVENTF_KEYUP; // KEYEVENTF_KEYUP for key release
 	SendInput(1, &ip, sizeof(INPUT));
-}
-
-void mouseMove(int x, int y) {
-	double fScreenWidth = ::GetSystemMetrics(SM_CXSCREEN) - 1;
-	double fScreenHeight = ::GetSystemMetrics(SM_CYSCREEN) - 1;
-	double fx = x*(65535.0f / fScreenWidth);
-	double fy = y*(65535.0f / fScreenHeight);
-	INPUT  Input = { 0 };
-	Input.type = INPUT_MOUSE;
-	Input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE;
-	Input.mi.dx = (long)fx;
-	Input.mi.dy = (long)fy;
-	::SendInput(1, &Input, sizeof(INPUT));
-}
-
-void leftClick() {
-	INPUT    Input = { 0 };
-	// left down 
-	Input.type = INPUT_MOUSE;
-	Input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-	::SendInput(1, &Input, sizeof(INPUT));
-
-	// left up
-	::ZeroMemory(&Input, sizeof(INPUT));
-	Input.type = INPUT_MOUSE;
-	Input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
-	::SendInput(1, &Input, sizeof(INPUT));
 }
