@@ -8,8 +8,16 @@ using namespace std;
 
 class StratBot {
 public:
-	StratBot(vector<double>& strat_stakes_in, int num_sims_in)
-		: strat_stakes(strat_stakes_in), num_sims(num_sims_in) {}
+	StratBot() {
+		ShellExecute(NULL, "open", "https://casino.bovada.lv/table-games/european-roulette?mode=practice", NULL, NULL, SW_SHOWMAXIMIZED); //Open Bovada
+		Sleep(500);
+		SetForegroundWindow(GetConsoleWindow());
+		getStratFromUser();
+		ShowWindow(GetConsoleWindow(), SW_MINIMIZE);
+		openDeveloperTools();
+		findHTMLvalues();
+		enableQuickSpin();
+	}
 
 	void runSims() {
 		results_pair.first = 0;
@@ -30,6 +38,21 @@ private:
 	pair<int, int> results_pair; //.first = wins, .second = losses
 	double bankroll;
 	int num_sims;
+
+	void getStratFromUser() {
+		int total_rolls;
+		cout << "Enter how many rolls your strategy can have before breaking: ";
+		cin >> total_rolls;
+		strat_stakes.resize(total_rolls);
+		cout << "Please enter each bet in order starting with the first: " << endl;
+		double input_bet;
+		for (int i = 0; i < total_rolls; ++i) {
+			cin >> input_bet;
+			strat_stakes[i] = input_bet;
+		}
+		cout << "How many simulations would you like the bot to run? ";
+		cin >> num_sims;
+	}
 
 	double getBankroll() {
 		mouseMove(1431, 346); //Double click on bankroll in developer options

@@ -1,0 +1,18 @@
+Avoiding Detection:
+	Randomize time between clicks
+	Randomize click location
+	Limit hours per day
+	Put in sporadic breaks with sporadic durations
+	Any CAPTCHA or other bot detection mechanism will need to be responded to manually ASAP
+	If the check box "I'm not a robot" pops up, then the important thing is what the mouse does before checking the box.
+	See if it is possible to change the IP frequently.
+
+Detection Methods:
+	User-agent string
+	HTTP header signature
+	Rate Limiting
+	CAPTCHA
+	JavaScript validation
+	Honeypot traps
+
+Cloud IP Ranges?
