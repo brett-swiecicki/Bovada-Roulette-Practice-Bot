@@ -163,24 +163,75 @@ void findHTMLvalues() {
 	Sleep(2000);
 	mouseMove(80, 374);
 	leftClick();
-	Sleep(2000);
+	Sleep(750);
 	primeChromeForObjectSelction();
-	Sleep(2000);
+	Sleep(750);
 	mouseMove(230, 374);
 	leftClick();
 }
 
 void enableQuickSpin() {
-	Sleep(2000);
+	Sleep(1000);
 	mouseMove(70, 755); // Open mini menu
 	leftClick();
-	Sleep(2000);
+	Sleep(1000);
 	mouseMove(181, 528); // Enable quick spin
 	leftClick();
-	Sleep(2000);
+	Sleep(1000);
 	mouseMove(70, 755); // Close mini menu
 	leftClick();
-	Sleep(2000);
+	Sleep(1000);
+}
+
+void refreshPage() {
+	INPUT ip;
+	ip.type = INPUT_KEYBOARD;
+	ip.ki.wScan = 0; // hardware scan code for key
+	ip.ki.time = 0;
+	ip.ki.dwExtraInfo = 0;
+
+	// Press the "F5" key
+	ip.ki.wVk = VK_F5; // virtual-key code for the "F5" key
+	ip.ki.dwFlags = 0; // 0 for key press
+	SendInput(1, &ip, sizeof(INPUT));
+
+	// Release the "F5" key
+	ip.ki.wVk = VK_F5;
+	ip.ki.dwFlags = KEYEVENTF_KEYUP; // KEYEVENTF_KEYUP for key release
+	SendInput(1, &ip, sizeof(INPUT));
+
+	Sleep(12000);
+	findHTMLvalues();
+	enableQuickSpin();
+}
+
+void closeBovada() { //CTRL + w
+					 // Create a generic keyboard event structure
+	INPUT ip;
+	ip.type = INPUT_KEYBOARD;
+	ip.ki.wScan = 0; // hardware scan code for key
+	ip.ki.time = 0;
+	ip.ki.dwExtraInfo = 0;
+
+	// Press the "CTRL" key
+	ip.ki.wVk = VK_CONTROL; // virtual-key code for the "CTRL" key
+	ip.ki.dwFlags = 0; // 0 for key press
+	SendInput(1, &ip, sizeof(INPUT));
+
+	// Press the "W" key
+	ip.ki.wVk = 'W';
+	ip.ki.dwFlags = 0; // 0 for key press
+	SendInput(1, &ip, sizeof(INPUT));
+
+	// Release the "W" key
+	ip.ki.wVk = 'W';
+	ip.ki.dwFlags = KEYEVENTF_KEYUP; // KEYEVENTF_KEYUP for key release
+	SendInput(1, &ip, sizeof(INPUT));
+
+	// Release the "CTRL" key
+	ip.ki.wVk = VK_CONTROL;
+	ip.ki.dwFlags = KEYEVENTF_KEYUP; // KEYEVENTF_KEYUP for key release
+	SendInput(1, &ip, sizeof(INPUT));
 }
 
 #endif
