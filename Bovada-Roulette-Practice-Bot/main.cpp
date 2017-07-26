@@ -20,11 +20,14 @@ the strategy doubles up or busts.
 using namespace std;
 
 void printHeader();
+void printRuntime(clock_t& t);
 
 int main() {
 	printHeader();
 	StratBot myStratBot = StratBot();
+	clock_t t = clock(); //Start clock
 	myStratBot.runSims();
+	printRuntime(t);
 	closeBovada();
 	Sleep(500);
 	ShowWindow(GetConsoleWindow(), SW_RESTORE);
@@ -47,4 +50,17 @@ void printHeader() {
 	cout << "	https://casino.bovada.lv/table-games/european-roulette?mode=practice" << endl;
 	cout << "	You will be betting on 1st 12." << endl;
 	cout << endl;
+}
+
+void printRuntime(clock_t& t) {
+	t = clock() - t;
+	double seconds = (((float)t) / (CLOCKS_PER_SEC));
+	double hours = (((seconds) / 60.0) / 60.0);
+	seconds -= (((int)hours) * 3600);
+	double minutes = ((seconds) / 60.0);
+	seconds -= (((int)minutes) * 60);
+	cout << "Total running time: ";
+	cout << (int)hours << " Hours: ";
+	cout << (int)minutes << " Minutes: ";
+	cout << (int)seconds << " Seconds" << endl;
 }
