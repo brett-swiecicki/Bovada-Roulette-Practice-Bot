@@ -68,6 +68,12 @@ string getClipboardText() {
 	// Lock the handle to get the actual text pointer
 	char * pszText = static_cast<char*>(GlobalLock(hData));
 
+	if (pszText == nullptr) {
+		copyToClipboard();
+		Sleep(250);
+		return getClipboardText();
+	}
+
 	// Save text in a string class instance
 	std::string text(pszText);
 

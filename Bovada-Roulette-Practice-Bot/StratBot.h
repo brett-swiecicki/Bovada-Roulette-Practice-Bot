@@ -43,13 +43,21 @@ public:
 				placeBet(bet);
 				quickSpin();
 				double new_bankroll = getBankroll();
-				if (new_bankroll > bankroll) {
-					roll_on_strat = 0;
-				}
-				else {
-					++roll_on_strat;
-					if (roll_on_strat == (int)strat_stakes.size()) {
+				bool new_bankroll_is_correct = false;
+				while (new_bankroll_is_correct == false) {
+					if (new_bankroll == (bankroll + (bet * 2))) {
 						roll_on_strat = 0;
+						new_bankroll_is_correct = true;
+					}
+					else if (new_bankroll == (bankroll - bet)) {
+						++roll_on_strat;
+						if (roll_on_strat == (int)strat_stakes.size()) {
+							roll_on_strat = 0;
+						}
+						new_bankroll_is_correct = true;
+					}
+					else {
+						new_bankroll = getBankroll();
 					}
 				}
 				bankroll = new_bankroll;
@@ -98,38 +106,42 @@ private:
 		}
 		cout << "How many simulations would you like the bot to run? ";
 		cin >> num_sims;
+		cout << endl;
 	}
 
 	double getBankroll() {
 		mouseMove(1000, 315); //Click away to allow amount to reset
 		leftClick();
-		Sleep(250);
+		Sleep(125);
 
 		mouseMove(1440, 315); //Double click on bankroll in developer options
 		leftClick();
 		leftClick();
-		Sleep(250);
+		Sleep(125);
 		copyToClipboard();
-		Sleep(750);
+		Sleep(250);
 		string bankroll_string = getClipboardText();
+		if ((bankroll_string.length() < 5) || (bankroll_string.at(bankroll_string.length() - 3) != '.')) { //Make sure a bankroll was read in
+			return getBankroll();
+		}
 		//Format data and return ($1,000.00)
 		bankroll_string.erase(0, 1); //1,000.00, erases $
-		if (bankroll_string.length() > 6) { // BAD! TODO!
+		if (bankroll_string.length() > 6) { // BAD! TODO! Delete commas
 			bankroll_string.erase(1, 1); //1000.00, erases ,
 		}
-		bankroll_string.erase((bankroll_string.length() - 3), 3); //1000, erases .00
+		bankroll_string.erase((bankroll_string.length() - 3), 3); //1000, erases .00 PROBLEM!
 		return stod(bankroll_string);
 	}
 
 	string getBetAmount() {
 		mouseMove(1000, 434); //Click away to allow amount to reset
 		leftClick();
-		Sleep(250);
+		Sleep(125);
 
 		mouseMove(1435, 434);
 		leftClick();
 		leftClick();
-		Sleep(500);
+		Sleep(125);
 		copyToClipboard();
 		Sleep(250);
 		return getClipboardText();
@@ -139,12 +151,13 @@ private:
 		mouseMove(835, 748);
 		leftClick();
 		string betAmount = getBetAmount();
-		while ((betAmount != "0") && (betAmount != "$0")) { //Wait for result
+		while (betAmount != "$0") { //Wait for result
 			betAmount = getBetAmount();
 		}
 	}
 
 	void placeBet(double bet) {
+		double desiredBet = bet;
 		int place500 = (int)(bet / 500.0);
 		if (place500 > 0) {
 			selectBet500();
@@ -194,42 +207,54 @@ private:
 				--place1;
 			}
 		}
+		//Double check the bet before continuing
+		string currentBet_str = getBetAmount();
+		if (currentBet_str.at(0) == '$') {
+			currentBet_str.erase(0, 1);
+		}
+		double currentBet = stod(currentBet_str);
+		if (currentBet != desiredBet) {
+			mouseMove(652, 750);
+			leftClick();
+			Sleep(250);
+			placeBet(desiredBet);
+		}
 	}
 
 	void selectBet1() {
 		mouseMove(160, 745);
 		leftClick();
-		Sleep(1000);
+		Sleep(250);
 	}
 
 	void selectBet5() {
 		mouseMove(230, 745);
 		leftClick();
-		Sleep(1000);
+		Sleep(250);
 	}
 
 	void selectBet25() {
 		mouseMove(285, 745);
 		leftClick();
-		Sleep(1000);
+		Sleep(250);
 	}
 
 	void selectBet100() {
 		mouseMove(350, 745);
 		leftClick();
-		Sleep(1000);
+		Sleep(250);
 	}
 
 	void selectBet500() {
 		mouseMove(410, 745);
 		leftClick();
-		Sleep(1000);
+		Sleep(250);
 	}
 
 	void betOnFirstTwelve() {
 		mouseMove(290, 610);
 		leftClick();
-		Sleep(250);
+		Sleep(200);
 	}
 };
 
